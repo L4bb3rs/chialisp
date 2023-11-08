@@ -253,7 +253,7 @@ class Wallet:
 
     def compute_combine_action(self, amt: uint64, actions: List, usable_coins: Dict[bytes32, Coin]) -> Optional[List[Coin]]:
         searcher = CoinPairSearch(amt)
-        for k, c in usable_coins.items():
+        for c in usable_coins.values():
             searcher.process_coin_for_combine_search(c)
         max_coins, total = searcher.get_result()
         return max_coins if total >= amt else None
@@ -544,10 +544,7 @@ class Network:
         reward.
         Used for causing chia balance to exist so the system can do things.
         """
-        farmer: Wallet = self.nobody
-        if "farmer" in kwargs:
-            farmer = kwargs["farmer"]
-
+        farmer = kwargs.get("farmer", self.nobody)
         farm_duration = datetime.timedelta(block_time)
         farmed: Tuple[List[Coin], List[Coin]] = await self.sim.farm_block(farmer.puzzle_hash)
 
